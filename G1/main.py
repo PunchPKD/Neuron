@@ -23,10 +23,13 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-    
-    if "yo" in message.content.lower():
-        await message.channel.send(f"hell")
 
+    if "test" in message.content.lower():
+        await message.channel.send(f"success1")
+        lastMessage = await message.channel.fetch_message(message.id)
+        await message.channel.send(f"success2")
+        await message.channel.send(lastMessage.content)
+    
     await bot.process_commands(message)
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
