@@ -14,7 +14,7 @@ intents.messages = True
 intents.guilds = True
 intents.members = True
 
-bot = commands.Bot(command_prefix='?', intents=intents)
+bot = commands.Bot(command_prefix='-', intents=intents)
 @bot.event
 async def on_ready():
     print(f"done")
@@ -27,9 +27,16 @@ async def on_message(message):
     if "test" in message.content.lower():
         await message.channel.send(f"success1")
         lastMessage = await message.channel.fetch_message(message.id)
-        await message.channel.send(f"success2")
         await message.channel.send(lastMessage.content)
     
     await bot.process_commands(message)
+
+@bot.command()
+async def count(ctx):
+    total = 0
+    async for messages in ctx.channel.history(limit=100):
+        if messages.author == ctx.author:
+            total += 1
+    await ctx.message.channel.send("you have sended total "+ str(total) +" messages out of last 100 messages")
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
