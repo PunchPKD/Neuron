@@ -34,9 +34,12 @@ async def on_message(message):
 @bot.command()
 async def count(ctx):
     total = 0
-    async for messages in ctx.channel.history(limit=100):
-        if messages.author == ctx.author:
+    newArray = []
+    async for messages in ctx.channel.history(limit=30):
+        if messages.content != "-count" and messages.author != bot.user:
+            newArray.append(messages.content)
             total += 1
-    await ctx.message.channel.send("you have sended total "+ str(total) +" messages out of last 100 messages")
+    #await ctx.message.channel.send("you have sended total "+ str(total) +" messages out of last 100 messages")
+    await ctx.message.channel.send(newArray)
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
