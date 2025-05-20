@@ -3,6 +3,8 @@ from discord.ext import commands
 import logging
 from dotenv import load_dotenv
 import os
+from AI_Handler import response
+from datetime import datetime
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -32,14 +34,14 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command()
-async def count(ctx):
+async def summary(ctx):
     total = 0
-    newArray = []
-    async for messages in ctx.channel.history(limit=30):
+    convoMatrix = []
+    async for messages in ctx.channel.history(limit=30, oldest_first=True, around=datetime.now()):
         if messages.content != "-count" and messages.author != bot.user:
-            newArray.append([])
-            newArray[total].append(messages.author.display_name)
-            newArray[total].append(messages.content)
+            convoMatrix.append([])
+            convoMatrix[total].append(messages.author.display_name)
+            convoMatrix[total].append(messages.content)
             total += 1
 
     def matrix_to_string(matrix):
@@ -47,6 +49,7 @@ async def count(ctx):
         result = '\n'.join(rows)
         return result
 
-    await ctx.message.channel.send(matrix_to_string(newArray))
+    convo = matrix_to_string(convoMatrix)
+    await ctx.message.channel.send(response(convo=convo).text)
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
