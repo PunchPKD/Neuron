@@ -37,9 +37,16 @@ async def count(ctx):
     newArray = []
     async for messages in ctx.channel.history(limit=30):
         if messages.content != "-count" and messages.author != bot.user:
-            newArray.append(messages.content)
+            newArray.append([])
+            newArray[total].append(messages.author.display_name)
+            newArray[total].append(messages.content)
             total += 1
-    #await ctx.message.channel.send("you have sended total "+ str(total) +" messages out of last 100 messages")
-    await ctx.message.channel.send(newArray)
+
+    def matrix_to_string(matrix):
+        rows = [' : '.join(row) for row in matrix]
+        result = '\n'.join(rows)
+        return result
+
+    await ctx.message.channel.send(matrix_to_string(newArray))
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
