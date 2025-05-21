@@ -18,3 +18,14 @@ def response(convo):
         )
     )
     return response
+    
+def mResponse(message):
+    summarise = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents="summarise this message in paragraph \n"+message,
+        config=types.GenerateContentConfig(
+            max_output_tokens=100,
+            temperature=1
+        )
+    )
+    return summarise

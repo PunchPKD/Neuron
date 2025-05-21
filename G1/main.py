@@ -6,11 +6,11 @@ import logging
 import os
 
 from typing import Literal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 from enum import Enum
 
 from dotenv import load_dotenv
-from AI_Handler import response
+from AI_Handler import *
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -68,5 +68,55 @@ async def summary(ctx: discord.integrations, duration: duration = 1):
 
     convo = matrix_to_string(convoMatrix)
     await ctx.response.send_message(response(convo=convo).text)
+
+@bot.tree.context_menu(name='summarise')
+async def summarise(ctx: discord.Interaction, message: discord.Message):
+    messageSum = mResponse(message.content).text
+    await ctx.response.send_message(messageSum)
+
+class Month(Enum):
+    Jan = 1
+    Feb = 2
+    Mar = 3
+    Apr = 4
+    May = 5
+    Jun = 6
+    Jul = 7
+    Aug = 8
+    Sep = 9
+    Oct = 10
+    Nov = 11
+    Dec = 12
+
+@bot.tree.command(name="summary_set_moment", description="summarise chat of specific date and time")
+@app_commands.rename(
+    imonth= 'month',
+    idate= 'date',
+    ihour= 'hour',
+)
+@app_commands.describe(
+    ihour= 'select from 0-23',
+)
+async def summary(ctx: discord.Interaction, 
+                  imonth: Month = datetime.now().month,
+                  idate: app_commands.Range[int, 1, 31] = datetime.now().day,
+                  ihour: app_commands.Range[int, 0, 23] = datetime.now().hour):
+    total = 0
+    convoMatrix = []
+    async for messages in ctx.channel.history(limit=50, oldest_first=True, after=datetime(year=datetime.now().year,month=imonth.value,day=idate,hour=ihour)):
+        if messages.content != "-summary" and messages.author != bot.user:
+            convoMatrix.append([])
+            convoMatrix[total].append(messages.author.display_name)
+            convoMatrix[total].append(messages.content)
+            total += 1
+
+    def matrix_to_string(matrix):
+        rows = [' : '.join(row) for row in matrix]
+        result = '\n'.join(rows)
+        return result
+
+    convo = matrix_to_string(convoMatrix)
+    await ctx.response.send_message(response(convo=convo).text)
+
 
 bot.run(token=token, log_handler=handler, log_level=logging.DEBUG)
