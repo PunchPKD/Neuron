@@ -7,8 +7,7 @@ This is my very first python project so ignore minor inconsistencies in codes
 The bot works using two very simple process, first it collects data from the discord and converts it into conversation format
 after that it passes that convo as a prompt to ai which summarises it and we simply post it back on discord
 
-There are 2 branches in this repository one deals with data collection and the other one deals with AI stuff which should be the main branch but
-i dont know how to transfer the main branch :p 
+There are 2 branches in this repository one deals with data collection and the other one deals with AI stuff
 
 From here on everything im going to talk about will be available in AI infused branch
 
